@@ -17,9 +17,9 @@ Foi feito um sistema distribuído composto por três microsserviços: **voting**
     - fechar o tópico após o término do tempo de aberto e enviar resultado da votação para broker. Esse fechamento ocorre devido a uma schedule criada em tempo de execução no momento que o tópico é aberto para votação.
 - `resulting`: Obter resultado de votação
     - obtém do broker e somente gera log com o resultado
-    - O microsserviço `voting` publica uma mensagem no RabbitMQ contendo o resultado da votação. O microsserviço `resulting` possui um *listener* configurado para consumir mensagens desse tópico específico. Ao receber a mensagem, o `resulting` faz a leitura do dado apenas.
+    - O microsserviço `voting` publica uma mensagem no RabbitMQ contendo o resultado da votação. O microsserviço `resulting` possui um *listener* configurado para consumir mensagens desse tópico específico. Ao receber a mensagem, o `resulting` faz a apenas a leitura do dado.
 
-![Arquitetura](arquitetura.drawio.png)
+![Arquitetura](docs/arquitetura.drawio.png)
 
 ## Estruturação do Código: Arquitetura Hexagonal
 
@@ -27,7 +27,7 @@ Para estruturação do código, foi escolhido a arquitetura hexagonal, também c
 
 Essa escolha ocorreu devido a sua capacidade de isolar o núcleo de negócio da aplicação das dependências. Essa abordagem oferece diversas vantagens, sendo a principal delas o baixo acoplamento entre os componentes que facilita a manutenção e a evolução do sistema.
 
-![Arquitetura Hexagonal](hexagonal.png)
+![Arquitetura Hexagonal](docs/hexagonal.png)
 
 ## Endpoints
 
@@ -99,3 +99,36 @@ curl --location 'http://localhost:8081/v1/votes' \
     *   `cd resulting && ./mvnw spring-boot:run`
 3.  Acesse a documentação da API em `http://localhost:8080/swagger-ui.html` (associate) e `http://localhost:8081/swagger-ui.html` (voting).
 
+## Análise de Performance
+
+Foram feitas análises básicas de performance da API com a infra local (máquina de desenvolvimento), rodando apenas uma instância dos serviços `associate` e `voting`, usando o software [Apache JMeter](https://jmeter.apache.org).
+
+Como a operação mais crítica poderia ser os votos, analisei alguns cenários básicos relativo a esse endpoint / operação.
+
+### Cenário 1 - Requisição que termina no voting
+No primeiro momento foi avaliado o cenário de `500 requisições` disparadas para a situação de tópico não aberto e/ou inválido.
+Nesse caso é feito a validação no próprio serviço `voting` e assim o retorno é mais rápido.
+Segue abaixo o resultado com **mais de 99% das requisições tendo no máximo 200 milisegundos**.
+
+![500 requisições tópico não aberto para votação](docs/500-requisicoes-topico-invalido.png)
+
+Foi avaliado também o cenário com `1000 requisições`, com as requisição terminando no `voting`.
+Segue abaixo o resultado.
+![1000 requisições tópico não aberto para votação](docs/1000-requisicoes-topico-invalido.png)
+
+Percebemos que mesmo com 1000 requisições disparadas, o serviço ainda responde em **menos de 1 segundo em mais de 99% delas**.
+
+### Cenário 2 - Requisição que `voting` consulta `associate`
+No segundo momento foi avaliado o cenário de `500 requisições` disparadas. Nesse caso, o tópico está aberto para votação e portanto o `voting` chega a consultar o serviço `associate` para verificar o status do associado (apto ou não apto para votar). Ou seja, é uma análise do quanto o efeito de ir em outro serviço que consulta um banco de dados toda vez que é feito a requisição.
+
+Segue abaixo o resultado para `500 requisições` disparadas.
+![500 requisições tópico aberto para votação](docs/500-requisicoes-topico-ok-consulta-associado.png)
+
+Segue abaixo o resultado para `1000 requisições` disparadas.
+![1000 requisições tópico aberto para votação](docs/1000-requisicoes-topico-ok-consulta-associado.png)
+
+Percebemos que com 1000 requisições disparadas, o serviço já se encontra em cenário crítico (considerando a infra local), e existem melhorias de arquitetura que poderiam ser discutidas considerando outros aspectos do negócio. 
+Exemplos: cache na consulta do banco do serviço `voting`.
+
+Uma consideração é que foi feito nesse projeto nesse momento um mecanismo de timeout e retry no caso da consulta `voting` --> `associate`, para caso o serviço `associate` esteja demorando, é encerrado a conexão e solicitado novo request.
+No entanto, melhorias poderiam ser feitas implementando o padrão `circuit break` para evitar sobrecarregar o serviço `associate` caso ele já esteja em dificuldade de processamento. 
