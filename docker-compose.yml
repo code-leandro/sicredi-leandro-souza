@@ -1,0 +1,50 @@
+services:
+
+  associate_db:
+    image: mysql:8.0
+    restart: always
+    volumes:
+      - associate_db_volume:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: associate_db
+    ports:
+      - 3306:3306
+
+  voting_db:
+    image: mysql:8.0
+    restart: always
+    volumes:
+      - voting_db_volume:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: voting_db
+    ports:
+      - 3307:3306
+
+  rabbitmq:
+    image: rabbitmq:3.9-management-alpine
+    container_name: rabbitmq-container
+    ports:
+      - "5672:5672" # Porta de comunicação
+      - "15672:15672" # Porta da interface de gerenciamento
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - rabbitmq_network
+    environment:  
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+
+volumes:
+  voting_db_volume:
+    driver: "local"
+  rabbitmq_data:
+    driver: "local"
+  associate_db_volume:
+    driver: "local"
+
+networks:
+  rabbitmq_network:
+    driver: bridge
+
