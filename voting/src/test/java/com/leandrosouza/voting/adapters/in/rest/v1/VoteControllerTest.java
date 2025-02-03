@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -30,22 +31,23 @@ public class VoteControllerTest {
 
     @Test
     void vote_shouldReturnCreatedVote() throws Exception {
-        VoteInDTO voteInDTO = new VoteInDTO();
-        voteInDTO.setCpf("123");
-        voteInDTO.setTopicId(UUID.randomUUID());
-        voteInDTO.setOption(true);
+        VoteInDTO voteInDTO = new VoteInDTO(
+                true,
+                UUID.randomUUID(),
+                "123");
+        VoteModel voteModelIn = VoteMapper.toVoteModel(voteInDTO);
 
-        VoteModel voteModel = new VoteModel(null, voteInDTO.getOption(), voteInDTO.getTopicId(), voteInDTO.getCpf());
-        VoteOutDTO voteOutDTO = new VoteOutDTO();
-        voteOutDTO.setCpf(voteInDTO.getCpf());
-        voteOutDTO.setTopicId(voteInDTO.getTopicId());
-        voteOutDTO.setOption(voteInDTO.getOption());
 
-        when(voteUseCase.vote(voteModel)).thenReturn(voteModel);
+        UUID voteId = UUID.randomUUID();
+        VoteModel voteModel = new VoteModel(voteId, voteInDTO.option(), voteInDTO.topicId(), voteInDTO.cpf());
+        VoteOutDTO voteOutDTO = VoteMapper.toVoteOutDTO(voteModel);
+
+        when(voteUseCase.vote(voteModelIn)).thenReturn(voteModel);
 
         ResponseEntity<VoteOutDTO> response = voteController.vote(voteInDTO);
 
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(voteOutDTO, response.getBody());
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody()).isEqualTo(voteOutDTO);
+        assertThat(response.getBody().id()).isEqualTo(voteId);
     }
 }

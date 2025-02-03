@@ -8,10 +8,10 @@ public class ResultMapper {
     public static ResultModel toDomain(ResultDTO resultDTO) {
         if (resultDTO == null) return null;
         return new ResultModel(
-            resultDTO.getTopicId(),
-            resultDTO.getTopicName(),
-            resultDTO.getVoteYes(),
-            resultDTO.getVoteNo());
+            resultDTO.topicId(),
+            resultDTO.topicName(),
+            resultDTO.voteYes(),
+            resultDTO.voteNo());
     }
 
 }

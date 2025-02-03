@@ -48,9 +48,7 @@ public class TopicControllerTest {
 
     @Test
     void create_shouldReturnCreatedTopic() {
-        TopicInDTO topicInDTO = new TopicInDTO();
-        topicInDTO.setName("Test Topic");
-        topicInDTO.setDuration(10);
+        TopicInDTO topicInDTO = new TopicInDTO("Test Topic", 10);
 
         TopicModel topicModel = TopicMapper.toTopicModel(topicInDTO);
         TopicOutDTO topicOutDTO = TopicMapper.toTopicOutDTO(topicModel);
@@ -99,7 +97,7 @@ public class TopicControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(List.of(topicOutDTO), response.getBody());
-        assertEquals(topicId, response.getBody().get(0).getId());
+        assertEquals(topicId, response.getBody().get(0).id());
         verify(queryTopicUseCase).findAllWithPagination(pageNumber, pageSize);
     }
 }

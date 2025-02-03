@@ -11,20 +11,20 @@ public class VoteMapper {
     public static VoteModel toVoteModel(VoteInDTO voteInDTO) {
 
         return VoteModel.builder()
-                .option(voteInDTO.getOption())
-                .topicId(voteInDTO.getTopicId())
-                .cpf(voteInDTO.getCpf())
+                .option(voteInDTO.option())
+                .topicId(voteInDTO.topicId())
+                .cpf(voteInDTO.cpf())
                 .build();
     }
 
     public static VoteOutDTO toVoteOutDTO(VoteModel voteModel) {
 
-        return VoteOutDTO.builder()
-                .id(voteModel.getId())
-                .option(voteModel.isOption())
-                .topicId(voteModel.getTopicId())
-                .cpf(voteModel.getCpf())
-                .build();
+        return new VoteOutDTO(
+                voteModel.getId(),
+                voteModel.isOption(),
+                voteModel.getTopicId(),
+                voteModel.getCpf()
+                );
     }
 
     public static VoteModel toVoteModel(VoteEntity voteEntity) {

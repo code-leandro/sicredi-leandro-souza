@@ -21,13 +21,10 @@ public class TopicMapper {
 
     public static TopicModel toTopicModel(TopicInDTO topicInDTO) {
 
-        TopicModel topicModel = TopicModel.builder()
-                .name(topicInDTO.getName())
+        return TopicModel.builder()
+                .name(topicInDTO.name())
+                .duration(topicInDTO.duration())
                 .build();
-        if (topicInDTO.getDuration() != null) {
-            topicModel.setDuration(topicInDTO.getDuration());
-        }
-        return topicModel;
     }
 
     public static TopicModel toTopicModel(TopicEntity topicEntity) {
@@ -43,14 +40,8 @@ public class TopicMapper {
     }
 
     public static TopicOutDTO toTopicOutDTO(TopicModel topicModel) {
-        return TopicOutDTO.builder()
-                .id(topicModel.getId())
-                .name(topicModel.getName())
-                .duration(topicModel.getDuration())
-                .open(topicModel.isOpen())
-                .startTime(topicModel.getStartTime())
-                .predictedEndTime(topicModel.getPredictedEndTime())
-                .effectiveEndTime(topicModel.getEffectiveEndTime())
-                .build();
+        return new TopicOutDTO(topicModel.getId(), topicModel.getName(), topicModel.getDuration(),
+                topicModel.isOpen(), topicModel.getStartTime(), topicModel.getPredictedEndTime(),
+                topicModel.getEffectiveEndTime());
     }
 }

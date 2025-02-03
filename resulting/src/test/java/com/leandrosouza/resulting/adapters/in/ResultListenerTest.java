@@ -29,9 +29,7 @@ public class ResultListenerTest {
 
     @Test
     void testReceive_successfulDeserialization() throws Exception {
-        ResultDTO resultDTO = new ResultDTO();
-        resultDTO.setTopicId(UUID.randomUUID());
-        resultDTO.setTopicName("Test Topic");
+        ResultDTO resultDTO = new ResultDTO(UUID.randomUUID(), "Test Topic", 0, 0);
 
         String json = objectMapper.writeValueAsString(resultDTO);
         MessageProperties messageProperties = new MessageProperties();
