@@ -105,6 +105,8 @@ Foram feitas análises básicas de performance da API com a infra local (máquin
 
 Como a operação mais crítica poderia ser os votos, analisei alguns cenários básicos relativo a esse endpoint / operação.
 
+Obs.: na tabela aparece % de erro total pois são feitas validações que geram status de retorno 4XX (404, 409...).
+
 ### Cenário 1 - Requisição que termina no voting
 No primeiro momento foi avaliado o cenário de `500 requisições` disparadas para a situação de tópico não aberto e/ou inválido.
 Nesse caso é feito a validação no próprio serviço `voting` e assim o retorno é mais rápido.
