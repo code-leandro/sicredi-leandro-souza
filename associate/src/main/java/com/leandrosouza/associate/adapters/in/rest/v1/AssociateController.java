@@ -33,7 +33,7 @@ public class AssociateController implements AssociateControllerProtocol {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<AssociateOutDTO> create(@Valid @RequestBody AssociateInDTO associateInDTO) {
 
-        log.info("[AssociateController > create] cpf: {}", associateInDTO.getCpf());
+        log.info("[AssociateController > create] cpf: {}", associateInDTO.cpf());
         AssociateModel associateModel = AssociateMapper.toDomain(associateInDTO);
         associateModel = createAssociateUseCase.create(associateModel);
         AssociateOutDTO associateOutDTO = AssociateMapper.toDTOOut(associateModel);

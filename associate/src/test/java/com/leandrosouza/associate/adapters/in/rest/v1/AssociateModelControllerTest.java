@@ -48,8 +48,8 @@ public class AssociateModelControllerTest {
 
         assertThat(associateOutDTOResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(associateOutDTOResponseEntity.getHeaders().getLocation().toString()).isEqualTo("/" + UUID_1);
-        assertThat(associateOutDTOResponseEntity.getBody().getAbleToVote()).isTrue();
-        assertThat(associateOutDTOResponseEntity.getBody().getUuid()).isEqualTo(UUID_1);
+        assertThat(associateOutDTOResponseEntity.getBody().ableToVote()).isTrue();
+        assertThat(associateOutDTOResponseEntity.getBody().uuid()).isEqualTo(UUID_1);
     }
 
     @Test

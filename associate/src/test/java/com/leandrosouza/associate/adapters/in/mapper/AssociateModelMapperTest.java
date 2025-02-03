@@ -21,8 +21,8 @@ public class AssociateModelMapperTest {
 
         AssociateInDTO associateInDTO = AssociateMapper.toDTOIn(associateModel);
 
-        assertEquals(associateModel.getCpf(), associateInDTO.getCpf());
-        assertEquals(associateModel.isAbleToVote(), associateInDTO.getAbleToVote());
+        assertEquals(associateModel.getCpf(), associateInDTO.cpf());
+        assertEquals(associateModel.isAbleToVote(), associateInDTO.ableToVote());
     }
 
     @Test
@@ -32,8 +32,8 @@ public class AssociateModelMapperTest {
         AssociateModel associateModel = AssociateMapper.toDomain(associateInDTO);
 
         assertNull(associateModel.getUuid()); // UUID deve ser nulo na conversão para Domain
-        assertEquals(associateInDTO.getCpf(), associateModel.getCpf());
-        assertEquals(associateInDTO.getAbleToVote(), associateModel.isAbleToVote());
+        assertEquals(associateInDTO.cpf(), associateModel.getCpf());
+        assertEquals(associateInDTO.ableToVote(), associateModel.isAbleToVote());
     }
 
     @Test
@@ -42,9 +42,9 @@ public class AssociateModelMapperTest {
 
         AssociateOutDTO associateOutDTO = AssociateMapper.toDTOOut(associateModel);
 
-        assertEquals(associateModel.getUuid(), associateOutDTO.getUuid());
-        assertEquals(associateModel.getCpf(), associateOutDTO.getCpf());
-        assertEquals(associateModel.isAbleToVote(), associateOutDTO.getAbleToVote());
+        assertEquals(associateModel.getUuid(), associateOutDTO.uuid());
+        assertEquals(associateModel.getCpf(), associateOutDTO.cpf());
+        assertEquals(associateModel.isAbleToVote(), associateOutDTO.ableToVote());
     }
 
     @Test

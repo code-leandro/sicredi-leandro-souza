@@ -12,7 +12,7 @@ public class AssociateMapper {
 
     public static AssociateModel toDomain(AssociateInDTO associateInDTO) {
         if (associateInDTO == null) return null;
-        return new AssociateModel(null, associateInDTO.getCpf(), associateInDTO.getAbleToVote());
+        return new AssociateModel(null, associateInDTO.cpf(), associateInDTO.ableToVote());
     }
 
     public static AssociateOutDTO toDTOOut(AssociateModel associateModel) {
