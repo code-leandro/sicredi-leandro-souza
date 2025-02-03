@@ -1,28 +1,27 @@
-# Sistema de Votação Distribuída
+# Sistema de Votação
 
-Este projeto foi feito como resolução de desafio proposto para um problema de votação de associados em pautas. 
+Este projeto foi feito como resolução de desafio proposto para um problema de votação de associados em pautas/assuntos. 
 
 Foi feito um sistema distribuído composto por três microsserviços: **voting**, **resulting** e **associate** que interagem por meio de um barramento de mensagens RabbitMQ e bancos de dados MySQL.
 
 
 ## Microserviços e Desenho arquitetural
 
-- `associate`: Gerenciar informações sobre os associados, incluindo cadastro e consulta de status de votação.
+- `associate`: Gerencia informações sobre os associados, incluindo cadastro e consulta de status de votação.
     - persistir associado
-    - consultar status de votação de um associado (ABLE_TO_VOTE ou UNABLE_TO_VOTE)
-- `voting`: Registrar os votos dos associados em um tópico.
-    - persistir um novo tópico (assunto de votação)
-    - abrir um tópico para votação
-    - receber um voto (valida no asssociate se associado pode votar)
-    - fechar o tópico após o término do tempo de aberto e enviar resultado da votação para broker
+    - consultar status de votação de um associado (verificar se está apto para votar)
+- `voting`: Registra os votos dos associados em um tópico e fecha o mesmo após seu tempo previsto aberto.
+    - persistir um novo tópico (assunto de votação). Nesse caso é enviado um parâmetro em minutos do tempo que terá aberto (quando aberto). Caso não seja enviado o valor default é 1 minuto.
+    - abrir um tópico para votação e já agendar seu fechamento via schedule no tempo previsto desse tópico ficar aberto.
+    - persistir um voto (se o tópico estiver aberto e se o associado está apto a votar - informação obtida a partir de uma consulta ao ms `associate`).
+    - fechar o tópico após o término do tempo de aberto e enviar resultado da votação para broker. Esse fechamento ocorre devido a uma schedule criada em tempo de execução no momento que o tópico é aberto para votação.
 - `resulting`: Obter resultado de votação
     - obtém do broker e somente gera log com o resultado
-    - O microsserviço `voting` publica uma mensagem no RabbitMQ contendo o resultado da votação. O microsserviço `resulting` possui um *listener* configurado para consumir mensagens desse tópico específico. Ao receber a mensagem, o `resulting` processa os dados e armazena o resultado final.
+    - O microsserviço `voting` publica uma mensagem no RabbitMQ contendo o resultado da votação. O microsserviço `resulting` possui um *listener* configurado para consumir mensagens desse tópico específico. Ao receber a mensagem, o `resulting` faz a leitura do dado apenas.
 
 ![Arquitetura](arquitetura.drawio.png)
 
 ## Estruturação do Código: Arquitetura Hexagonal
-
 
 Para estruturação do código, foi escolhido a arquitetura hexagonal, também conhecida como arquitetura de portas e adaptadores, como forma de implementação. 
 
