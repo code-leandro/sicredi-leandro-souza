@@ -8,9 +8,6 @@ spring:
     password: root@1voting
     continue-on-error: true
     driver-class-name: com.mysql.cj.jdbc.Driver
-  flyway:
-    enable: true
-    baseline-on-migrate: true
   jpa:
     hibernate:
       ddl-auto: update
