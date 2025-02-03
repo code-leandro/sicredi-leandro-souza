@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3307/voting_db?createDatabaseIfNotExist=true
     username: root
-    password: root@1voting
+    password: root
     continue-on-error: true
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
